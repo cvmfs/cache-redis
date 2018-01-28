@@ -1,0 +1,23 @@
+find_path(
+    CVMFS_CACHE_INCLUDE_DIRS
+    NAMES libcvmfs_cache.h
+    HINTS ${CVMFS_CACHE_INCLUDE_DIRS}
+)
+
+find_library(
+    CVMFS_CACHE_LIBRARIES
+    NAMES cvmfs_cache
+    HINTS ${CVMFS_CACHE_LIBRARY_DIRS}
+)
+
+include(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(
+    CVMFS_CACHE
+    DEFAULT_MSG
+    CVMFS_CACHE_LIBRARIES
+    CVMFS_CACHE_INCLUDE_DIRS
+)
+
+if(CVMFS_CACHE_FOUND)
+    mark_as_advanced(CVMFS_CACHE_LIBRARIES CVMFS_CACHE_INCLUDE_DIRS)
+endif()

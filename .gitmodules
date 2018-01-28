@@ -1,0 +1,3 @@
+[submodule "external/redox"]
+	path = external/redox
+	url = https://github.com/hmartiro/redox.git
