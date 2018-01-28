@@ -1,6 +1,6 @@
 include_directories(${PROJECT_SOURCE_DIR}/external/redox/include ${PROJECT_SOURCE_DIR}/src)
 
-set(lib${PROJECT_NAME_LOWER}_sources redis_plugin.cc)
+set(lib${PROJECT_NAME_LOWER}_sources redis_plugin.cc util.cc)
 
 add_library(lib${PROJECT_NAME_LOWER} ${lib${PROJECT_NAME_LOWER}_sources})
 
