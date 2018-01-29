@@ -1,8 +1,5 @@
-Cache plugin for CernVM FS backed by Redis
-==========================================
-
-A cache plugin for the CernVM File System using Redis as a backing store.
-
+CernVM FS cache plugin backed by Redis
+======================================
 
 Build
 -----
