@@ -8,11 +8,11 @@ Install requirements:
 
 * Linux (Debian, Ubuntu):
 
-        $ sudo apt-get install cmake redis-{server,tools} libhiredis-dev libev-dev
+        $ sudo apt-get install g++ cmake make redis-{server,tools} libhiredis-dev libev-dev
 
 * macOS:
 
-        $ brew install redis hiredis libev
+        $ brew install cmake redis hiredis libev
 
 Build:
 
