@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include <cstring>
+
 #include "util.h"
 
 namespace {
