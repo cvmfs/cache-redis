@@ -4,6 +4,8 @@ CernVM FS cache plugin backed by Redis
 Build
 -----
 
+Install the CernVM FS client and development packages.
+
 Install requirements:
 
 * Linux (Debian, Ubuntu):
@@ -16,6 +18,7 @@ Install requirements:
 
 Build:
 
+    $ git submodule init && git submodule update
     $ mkdir build && cmake ../ && make && sudo make install
 
 
