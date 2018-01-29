@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.8)
 
-project(redis_cvmfs_cache_plugin)
+project(cache-redis)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
