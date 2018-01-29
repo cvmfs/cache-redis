@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include <cassert>
 #include <cstring>
 
 #include "util.h"
@@ -12,12 +13,11 @@
 namespace {
 
 std::string IdToString(const struct cvmcache_hash& id) {
-  auto s = std::string(reinterpret_cast<const char*>(id.digest), 20);
-  return Base64(s);
+  return std::string(reinterpret_cast<const char*>(id.digest), 20);
 }
 
 bool Exists(redox::Redox& rdx, const struct cvmcache_hash& id) {
-  const auto digest = IdToString(id);
+  const std::string digest = IdToString(id);
 
   auto& c = rdx.commandSync<int>({"EXISTS", digest});
   bool ret = false;
@@ -26,22 +26,35 @@ bool Exists(redox::Redox& rdx, const struct cvmcache_hash& id) {
   }
   c.free();
 
+  //std::cout << "Exists - digest: " << Base64(digest) << ret << std::endl;
+
   return ret;
 }
 
 Object Get(redox::Redox& rdx, const struct cvmcache_hash& id) {
-  const auto digest = IdToString(id);
-  std::string val;
-  Debase64(rdx.get(digest), &val);
+  const std::string digest = IdToString(id);
+
+  auto& c = rdx.commandSync<std::string>({"GET", digest});
+  const std::string val = c.reply();
+  assert(c.ok());
+  c.free();
+
+  assert(!val.empty());
+
+  //std::cout << "Get - digest: " << Base64(digest) << ", val_size: " << val.size() << std::endl;
 
   return Object::Deserialize(val);
 }
 
 void Set(redox::Redox& rdx, const struct cvmcache_hash& id, const Object& obj) {
-  const auto val = Base64(obj.Serialize());
-  const auto digest = IdToString(id);
+  const std::string digest = IdToString(id);
+  const std::string val = obj.Serialize();
 
-  rdx.set(digest, val);
+  auto& c = rdx.commandSync<std::string>({"SET", digest, val});
+  assert(c.ok());
+  c.free();
+
+  //std::cout << "Set - digest: " << Base64(digest) << ", val_size: " << val.size() << std::endl;
 }
 
 }
@@ -51,8 +64,8 @@ std::string Object::Serialize() const {
   const size_t desc_size = this->description.size();
 
   // data_size + data + type + refcnt + description_size + description
-  const auto len = sizeof(data_size) + this->data.size() +
-      sizeof(cvmcache_object_type) + sizeof(this->refcnt) + sizeof(data_size) +
+  const auto len = sizeof(size_t) + this->data.size() +
+      sizeof(cvmcache_object_type) + sizeof(this->refcnt) + sizeof(size_t) +
       this->description.size();
 
   std::vector<char> out(len);
@@ -85,7 +98,7 @@ Object Object::Deserialize(const std::string& s) {
 
   auto src = s.data();
 
-  std::memcpy(&data_size, src, sizeof(data_size));
+  std::memcpy(&data_size, src, sizeof(size_t));
   src += sizeof(data_size);
 
   std::vector<char> buf(data_size);
@@ -99,7 +112,7 @@ Object Object::Deserialize(const std::string& s) {
   std::memcpy(&obj.refcnt, src, sizeof(obj.refcnt));
   src += sizeof(obj.refcnt);
 
-  std::memcpy(&desc_size, src, sizeof(desc_size));
+  std::memcpy(&desc_size, src, sizeof(size_t));
   buf.resize(desc_size);
   src += sizeof(desc_size);
 
